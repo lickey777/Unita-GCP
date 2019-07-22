@@ -1,0 +1,64 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: $APP_INSTANCE_NAME-unita
+spec:
+  selector:
+    matchLabels:
+      application: unita
+  serviceName: "$APP_INSTANCE_NAME-unita"
+  replicas: $UNITA_REPLICAS
+  template:
+    metadata:
+      labels:
+        application: unita
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: unita
+          image: $UNITA_IMAGE
+          command: ['unitad']
+          args: ['-datadir=/data','-rpcport=23889','-rpcuser=unita','-rpcpassword=unita']
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: PRIVKEYS
+              value: $UNITA_PRIVKEYS
+            - name: ADDRS
+              value: $UNITA_ADDRS
+            - name: REPLICAS
+              value: $UNITA_REPLICAS
+            - name: CHAIN_NAME
+              value: $CHAIN_NAME
+          ports:
+            - containerPort: 33669
+          volumeMounts:
+            - name: unita-persistent-storage
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: unita-persistent-storage
+        labels:
+          app.kubernetes.io/name: "unita"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_INSTANCE_NAME-unita
+  labels:
+    apps: unita
+spec:
+  ports:
+    - port: 33669
+      targetPort: 33669
+  clusterIP: None
+  selector:
+    application: unita

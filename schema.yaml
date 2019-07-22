@@ -1,0 +1,48 @@
+application_api_version: v1beta1
+properties:
+    APP_INSTANCE_NAME:
+        type: string
+        x-google-marketplace:
+            type: NAME
+    NAMESPACE:
+        type: string
+        x-google-marketplace:
+            type: NAMESPACE
+    UNITA_IMAGE:
+        type: string
+        default: $REGISTRY:$TAG
+        x-google-marketplace:
+            type: IMAGE
+    UNITA_INITIMAGE:
+        type: string
+        default: $REGISTRY/ubuntu16_04:$TAG
+        x-google-marketplace:
+            type: IMAGE
+    CHAIN_NAME:
+        type: string
+        default: unita
+        description: Name of which chain you have launched on chain.unita.network
+    UNITA_REPLICAS:
+        type: integer
+        title: Replicas
+        description: The number of Pod replicas, defult is 3
+        default: 3
+        minimum: 1
+        maximum: 5
+    UNITA_PRIVKEYS:
+        type: string
+        title: String of privatekeys
+        description: Privkeys of supernode-addresses, please seperate each privkey with ',', and number of privkeys should be equal to replicas
+    UNITA_ADDRS:
+        type: string
+        title: String of addresses
+        description: Addresses of supernodes, please seperate each address with ',', and number of addresses should be equal to replicas
+required:
+    - APP_INSTANCE_NAME
+    - NAMESPACE
+    - UNITA_IMAGE
+    - UNITA_INITIMAGE
+    - CHAIN_NAME
+    - UNITA_REPLICAS
+    - UNITA_PRIVKEYS
+    - UNITA_ADDRS
